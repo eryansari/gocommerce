@@ -1,0 +1,58 @@
+version: '3.7'
+services:
+  dbone:
+    image: mongo:4.0.16-xenial
+    container_name: dbone
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=ery
+      - MONGO_INITDB_ROOT_PASSWORD=erySRG
+      - MONGO_INITDB_DATABASE=gocommerce-db
+    command: mongod --port 27020
+    ports:
+      - 27020:27020
+    volumes:
+      - ./init-db.js:/docker-entrypoint-initdb.d/*.js:ro
+      - ./data/dbone:/data/db
+  dbtwo:
+    image: mongo:4.0.16-xenial
+    container_name: dbtwo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=ery
+      - MONGO_INITDB_ROOT_PASSWORD=erySRG
+      - MONGO_INITDB_DATABASE=gocommerce-db
+    command: mongod --port 27021
+    ports:
+      - 27021:27021
+    volumes:
+      - ./init-db.js:/docker-entrypoint-initdb.d/*.js:ro
+      - ./data/dbtwo:/data/db
+  microservice-authentication:
+    image: microservice-authentication:latest
+    container_name: microservice-authentication
+    restart: on-failure
+    ports:
+      - 7075:7075
+    volumes:
+      - ./data/microservice-authentication/logs:/microservice-authentication/logs
+    depends_on:
+      - 'dbone'
+  microservice-product:
+    image: microservice-product:latest
+    container_name: microservice-product
+    restart: on-failure
+    ports:
+      - 7076:7076
+    volumes:
+      - ./data/microservice-product/logs:/microservice-product/logs
+    depends_on:
+      - 'dbone'
+  microservice-order:
+    image: microservice-order:latest
+    container_name: microservice-order
+    restart: on-failure
+    ports:
+      - 7077:7077
+    volumes:
+      - ./data/microservice-order/logs:/microservice-order/logs
+    depends_on:
+      - 'dbtwo'

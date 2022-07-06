@@ -1,0 +1,16 @@
+app:
+  service:
+      path: "./microservice-order"
+  grpc:
+    host: 0.0.0.0
+    port: 7077
+  mongodb:
+    uri: mongodb://ery:erySRG@dbtwo:27021
+    database: gocommerce-db
+    timeoutinsecond: 10
+  jwt:
+    issuer: issuer
+    sign-key: ErY0
+    expires-seconds: 3600
+  log:
+    path: ./logs/
